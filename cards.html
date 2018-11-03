@@ -1,0 +1,79 @@
+{% set x = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'] %}
+{% set y = '9' %}
+{% set bgTypes = x|random ~ x|random ~ x|random ~ y|random ~ y|random ~ y|random %}
+
+<style>
+  .bg-{{ bgTypes }} { 
+    {% if module.advanced_settings.background_types == 'none' %}
+        background: none;
+    {% elif module.advanced_settings.background_types == 'image' %}
+      {% if module.advanced_settings.background_image.src %}
+        background-image: url({{ module.advanced_settings.background_image.src }});
+      {% endif %}
+    {% elif module.advanced_settings.background_types == 'color' %}
+      {% if module.advanced_settings.background_color %}
+      	background-color: rgba({{ module.advanced_settings.background_color.color|convert_rgb}}, {% if module.advanced_settings.background_color.opacity != 100 %}0.{{ module.advanced_settings.background_color.opacity }}{% else %}1{% endif %});
+      {% endif %}
+    {% endif %}
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+  .flexible-cards .icon {
+    max-width: 100%;
+    width: 36px;
+  }
+</style>
+
+<section class="flexible-cards mx-auto bg-{{ bgTypes }} {{ module.advanced_settings.spacing }} {{ module.advanced_settings.font_size }} {{ module.advanced_settings.font_weight }} {{ module.advanced_settings.width }} {{ module.advanced_settings.color }} {{ module.advanced_settings.text_alignment.text_alignment_desktop }} {{ module.advanced_settings.text_alignment.text_alignment_tablet }} {{ module.advanced_settings.text_alignment.text_alignment_phone }} {{ module.advanced_settings.display }}">
+  <div class="row-fluid">
+    <div class="span12 {% if module.advanced_settings.page_center %}page-center{% endif %}">
+      {% if module.cards_heading %}
+        <div class="{{ module.cards_heading_text_alignment.text_alignment_desktop }} {{ module.cards_heading_text_alignment.text_alignment_tablet }} {{ module.cards_heading_text_alignment.text_alignment_phone }}">
+          <h2>{{ module.cards_heading }}</h2>
+        </div>
+      {% endif %}
+
+      <div class="card-deck">
+      {% for item in module.cards %}
+        
+          <div class="card">
+            
+
+            <i class="{{ item.icon_style }} fa-{{ item.icon_field.name }} text-center {{ item.card_icon_size }}"></i>
+            
+            {% if item.card_image.src %}
+              <img class="card-img-top" src="{{ item.card_image.src }}" alt="{{ item.card_image.alt }}">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ item.card_title }}</h5>
+              <p class="card-text">{{ item.card_text }}</p>
+            </div>
+            <div class="card-footer">
+              <small class="text-muted">{{ item.card_footer }}</small>
+            </div>
+          </div>
+        	
+        	{# cycle '','','','','<div class="w-100 d-xl-block"><!-- wrap every 3 on xl--></div>' #}
+        	{% if loop.index % module.cards_column_per_row == 0 %}
+        		
+        			<div class="w-100 d-none d-md-block"></div>
+        
+          {% endif %}
+   
+        
+        	{% if loop.last %}
+        		{% set count = loop.index % module.cards_column_per_row %}
+        		{% for i in range(module.cards_column_per_row-count) %}
+        			<div class="card invisible"></div>
+        		{% endfor %}
+          {% endif %}
+        
+      {% endfor %}
+      </div>
+      
+      
+      
+    </div>
+  </div>
+</section>
